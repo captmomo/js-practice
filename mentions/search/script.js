@@ -48,7 +48,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
   [textBox].forEach((elem) => {
     elem.addEventListener("click", function () {
-      if(document.getElementById("tool-tip")){
+      if (document.getElementById("tool-tip")) {
         document.getElementById("tool-tip").remove();
       }
       Object.keys(appData.key).forEach((prop) => {
@@ -94,30 +94,36 @@ const doMap = function mapCharToProp(char, prop) {
       }
       console.log(event);
       const key = event.key.toLowerCase();
-      if (checkFocus(textBox) && (event.key == char)){
-          appData.key[prop]["visible"] = true;
-          appData.lastPos = getCaretPos(textBox);
-          appData.query = "";
-          appData.lastChar = key;
-          //showSuggestions(appData.users, prop);
-          vanillaShow(appData.users, prop);
-          return;
+      if (checkFocus(textBox) && (event.key == char)) {
+        appData.key[prop]["visible"] = true;
+        appData.lastPos = getCaretPos(textBox);
+        appData.query = "";
+        appData.lastChar = key;
+        //showSuggestions(appData.users, prop);
+        vanillaShow(appData.users, prop);
+        return;
       }
-      else if(checkFocus(textBox) && appData.key[prop]["visible"] == true && appData.lastChar == char){
+      else if (checkFocus(textBox) && appData.key[prop]["visible"] == true && appData.lastChar == char && checkChar(key)) {
         appData.query = appData.query += key;
         let filtered = appData.users.filter(user => user[prop].includes(appData.query));
-        
+        if (filtered.length == 0) {
+          resetQuery();
+          return;
+        }
         vanillaShow(filtered, prop)
-      } else{
+      } else {
         return;
       }
     },
     false
   );
 };
-
-const vanillaShow = function(data, property){
-  if(document.getElementById("tool-tip")){
+const resetQuery = function () {
+  removeTooltip('tool-tip');
+  appData.query = '';
+}
+const vanillaShow = function (data, property) {
+  if (document.getElementById("tool-tip")) {
     document.getElementById("tool-tip").remove();
   }
   let pos = getCaretPos(textBox);
@@ -128,14 +134,14 @@ const vanillaShow = function(data, property){
   if (tooltipLeft > maxLeft) {
     tooltipLeft = maxLeft;
   }
-    let message = document.createElement("div");
-    message.id = "tool-tip"
-    message.style.cssText = "position:absolute;";
-    message.style.left = tooltipLeft + "px";
-    message.style.top = coords.bottom + "px";
-    message.classList.add('tool-tip');
-    message.innerHTML = createPopup(data, property, appData.lastPos).innerHTML;
-    document.body.append(message);
+  let message = document.createElement("div");
+  message.id = "tool-tip"
+  message.style.cssText = "position:absolute;";
+  message.style.left = tooltipLeft + "px";
+  message.style.top = coords.bottom + "px";
+  message.classList.add('tool-tip');
+  message.innerHTML = createPopup(data, property, appData.lastPos).innerHTML;
+  document.body.append(message);
 }
 //https://javascript.info/coordinates
 function createMessageUnder(elem, html) {
@@ -172,19 +178,14 @@ function getCaretPos(elem) {
   return end > start ? end : start;
 }
 
-const removeTooltip = function hideElemById(id){
-  if(document.getElementById(id)){
+const removeTooltip = function hideElemById(id) {
+  if (document.getElementById(id)) {
     document.getElementById(id).remove();
-    
+
   }
 }
 const createPopup = function (data, prop, lastPos) {
   let container = document.createElement("div");
-  if(data.length == 0){
-    container.innerHTML = `<p><a class="tag" onclick="removeTooltip('tool-tip')">No results</a></p>`
-    appData.query = "";
-    return container;
-  }
   data.forEach((elem) => {
     let info = document.createElement("p");
     info.innerHTML = `<a class="tag" onclick="insertString('${elem[prop]}', '${prop}')">${elem[prop]}</a>`;
