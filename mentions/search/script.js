@@ -13,6 +13,14 @@ const appData = {
     {
       name: "test",
       email: "test@tes.com"
+    },
+    {
+      name: "a",
+      email: "a@a.a"
+    },
+    {
+      name: "b",
+      email: "b@b.c"
     }
   ]
 };
@@ -111,6 +119,7 @@ const doMap = function mapCharToProp(char, prop) {
           return;
         }
         vanillaShow(filtered, prop)
+        return;
       } else {
         return;
       }
@@ -118,9 +127,10 @@ const doMap = function mapCharToProp(char, prop) {
     false
   );
 };
-const resetQuery = function () {
+const resetQuery = function (prop) {
   removeTooltip('tool-tip');
   appData.query = '';
+  appData.key[prop]["visible"] = false;
 }
 const vanillaShow = function (data, property) {
   if (document.getElementById("tool-tip")) {
@@ -162,7 +172,9 @@ const getPixelWidth = function getStringWidth(input) {
   var ctx = canvas.getContext("2d");
   let fontSize = css(textBox, "font-size");
   let fontFamily = css(textBox, "font-family");
-  ctx.font = `${fontSize} ${fontFamily}`;
+  console.log(`${fontSize} ${fontFamily}`)
+  ctx.font = `${fontSize} sans-serif`;
+  console.log(ctx.measureText(input).width);
   return ctx.measureText(input).width;
 };
 
@@ -181,10 +193,9 @@ function getCaretPos(elem) {
 const removeTooltip = function hideElemById(id) {
   if (document.getElementById(id)) {
     document.getElementById(id).remove();
-
   }
 }
-const createPopup = function (data, prop, lastPos) {
+const createPopup = function (data, prop) {
   let container = document.createElement("div");
   data.forEach((elem) => {
     let info = document.createElement("p");
