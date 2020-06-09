@@ -87,7 +87,7 @@ const doMap = function mapCharToProp(char, prop) {
   appData.key[prop] = { key: char, lastKey: false, visible: false };
   //console.log(appData);
   textBox.addEventListener(
-    "keyup",
+    "keydown",
     function (event) {
       if (event.isComposing || event.keyCode === 229) {
         return;

@@ -87,19 +87,26 @@ const doMap = function mapCharToProp(char, prop) {
   appData.key[prop] = { key: char, lastKey: false, visible: false };
   //console.log(appData);
   textBox.addEventListener(
-    "keyup",
+    "keydown",
     function (event) {
       if (event.isComposing || event.keyCode === 229) {
         return;
       }
+      console.log(event);
       const key = event.key.toLowerCase();
-      if (checkFocus(textBox)
-        && (event.key == char)){
+      if (checkFocus(textBox) && (event.key == char)){
           appData.key[prop]["visible"] = true;
           appData.lastPos = getCaretPos(textBox);
           appData.query = "";
           //showSuggestions(appData.users, prop);
           vanillaShow(appData.users, prop);
+      }
+      else if(checkFocus(textBox) && document.getElementById("tool-tip") && checkChar(key)){
+        appData.query = appData.query += key;
+        let filtered = appData.users.filter(user => user[prop].includes(appData.query));
+        vanillaShow(filtered, prop)
+      } else{
+        return;
       }
     },
     false
