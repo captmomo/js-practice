@@ -100,7 +100,8 @@ const doMap = function mapCharToProp(char, prop) {
       if (event.isComposing || event.keyCode === 229) {
         return;
       }
-      console.log(event);
+    
+      
       const key = event.key.toLowerCase();
       if (checkFocus(textBox) && (event.key == char)) {
         appData.key[prop]["visible"] = true;
@@ -111,7 +112,11 @@ const doMap = function mapCharToProp(char, prop) {
         vanillaShow(appData.users, prop);
         return;
       }
-      else if (checkFocus(textBox) && appData.key[prop]["visible"] == true && appData.lastChar == char && checkChar(key)) {
+      else if (checkFocus(textBox) && appData.key[prop]["visible"] == true && appData.lastChar == char) {
+        if(!checkChar(key)){
+          resetQuery(prop);
+          return;
+        }
         appData.query = appData.query += key;
         let filtered = appData.users.filter(user => user[prop].includes(appData.query));
         if (filtered.length == 0) {
@@ -121,6 +126,7 @@ const doMap = function mapCharToProp(char, prop) {
         vanillaShow(filtered, prop)
         return;
       } else {
+        
         return;
       }
     },
@@ -137,7 +143,7 @@ const vanillaShow = function (data, property) {
     document.getElementById("tool-tip").remove();
   }
   let pos = getCaretPos(textBox);
-  let offset = getPixelWidth(getCurrentText(textBox, pos));
+  let offset = getPixelWidth(getCurrentText(textBox, pos)) + 10;
   let coords = getCoords(textBox);
   let maxLeft = textBox.clientWidth + coords.left;
   let tooltipLeft = coords.left + offset;
@@ -173,7 +179,7 @@ const getPixelWidth = function getStringWidth(input) {
   let fontSize = css(textBox, "font-size");
   let fontFamily = css(textBox, "font-family");
   console.log(`${fontSize} ${fontFamily}`)
-  ctx.font = `${fontSize} sans-serif`;
+  ctx.font = `${fontSize} ${fontFamily}`;
   console.log(ctx.measureText(input).width);
   return ctx.measureText(input).width;
 };
