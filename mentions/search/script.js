@@ -115,7 +115,7 @@ const doMap = function mapCharToProp(char, prop) {
         appData.query = appData.query += key;
         let filtered = appData.users.filter(user => user[prop].includes(appData.query));
         if (filtered.length == 0) {
-          resetQuery();
+          resetQuery(prop);
           return;
         }
         vanillaShow(filtered, prop)
