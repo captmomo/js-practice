@@ -1,0 +1,11 @@
+body{
+  margin-top: 100px;
+}
+.tag {
+  margin-top: 0.2em;
+}
+
+.tool-tip{
+  font-size: "10px";
+  z-index: 10;
+}
