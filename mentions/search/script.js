@@ -98,12 +98,15 @@ const doMap = function mapCharToProp(char, prop) {
           appData.key[prop]["visible"] = true;
           appData.lastPos = getCaretPos(textBox);
           appData.query = "";
+          appData.lastChar = key;
           //showSuggestions(appData.users, prop);
           vanillaShow(appData.users, prop);
+          return;
       }
-      else if(checkFocus(textBox) && document.getElementById("tool-tip") && checkChar(key)){
+      else if(checkFocus(textBox) && appData.key[prop]["visible"] == true && appData.lastChar == char){
         appData.query = appData.query += key;
         let filtered = appData.users.filter(user => user[prop].includes(appData.query));
+        
         vanillaShow(filtered, prop)
       } else{
         return;
@@ -172,30 +175,35 @@ function getCaretPos(elem) {
 const removeTooltip = function hideElemById(id){
   if(document.getElementById(id)){
     document.getElementById(id).remove();
+    
   }
 }
 const createPopup = function (data, prop, lastPos) {
   let container = document.createElement("div");
+  if(data.length == 0){
+    container.innerHTML = `<p><a class="tag" onclick="removeTooltip('tool-tip')">No results</a></p>`
+    appData.query = "";
+    return container;
+  }
   data.forEach((elem) => {
     let info = document.createElement("p");
-    info.innerHTML = `<a class="tag" onclick="insertString('${elem[prop]}')">${elem[prop]}</a>`;
+    info.innerHTML = `<a class="tag" onclick="insertString('${elem[prop]}', '${prop}')">${elem[prop]}</a>`;
     container.appendChild(info);
   });
   //toggleProp(prop);
   return container;
 };
-function insertString(info) {
+function insertString(info, prop) {
   let current = textBox.value;
   let pos = getCaretPos(textBox);
   console.log(current);
-  textBox.value = `${current.substring(0, pos - 1)}${info} ${current.substring(
-    pos
-  )}`;
+  textBox.value = `${current.substring(0, pos - 1 - appData.query.length)}${info} ${current.substring(pos)}`;
   appData.query = '';
   removeTooltip('tool-tip');
+  toggleProp(prop, false);
 }
 function toggleProp(prop) {
-  appData.key[prop]["visible"] = !appData.key[prop]["visible"];
+  appData.key[prop]["visible"] = false;
 }
 function addClickHandler(elem, action) {
   //dconsole.log(elem)
